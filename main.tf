@@ -85,7 +85,7 @@ resource "aws_appsync_graphql_api" "api" {
   // Add all additional auth mechanisms
   dynamic "additional_authentication_provider" {
     // Loop for all except the first one
-    for_each = length(var.authentication_types) > 1 ? slice(var.authentication_types, 1, length(var.authentication_types) - 1) : []
+    for_each = length(var.authentication_types) > 1 ? slice(var.authentication_types, 1, length(var.authentication_types)) : []
     content {
       authentication_type = additional_authentication_provider.value
       // Only add the 'openid_connect_config' block if this is an OpenID mechanism

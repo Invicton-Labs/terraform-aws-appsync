@@ -26,3 +26,7 @@ output "log_group" {
   description = "The CloudWatch log group resource that was created for the AppSync API."
   value       = aws_cloudwatch_log_group.api
 }
+output "schema" {
+  description = "The GraphQL schema for AppSync. Not available until the schema apply is complete."
+  value = aws_appsync_graphql_api.api.schema
+}
