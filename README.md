@@ -1,6 +1,6 @@
 # Terraform AWS AppSync
 
-This module creates a complete AppSync deployment, including the GraphQL API, the schema, and the resolvers. It is intended to be used with the [Invicton-Labs/appsync-parser](https://registry.terraform.io/modules/Invicton-Labs/appsync-parser/aws/latest) module.
+This module creates a complete AppSync deployment, including the GraphQL API, the schema, and the resolvers. It is intended to be used with the [Invicton-Labs/appsync-parser/aws](https://registry.terraform.io/modules/Invicton-Labs/appsync-parser/aws/latest) module.
 
 ## Note
 
