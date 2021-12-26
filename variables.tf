@@ -2,6 +2,7 @@ variable "name" {
   description = "The name for the GraphQL API."
   type        = string
 }
+
 variable "authentication_types" {
   description = "A list of authentication types. Valid values: `API_KEY`, `AWS_IAM`, `AMAZON_COGNITO_USER_POOLS`, or `OPENID_CONNECT`."
   type        = list(string)
@@ -18,45 +19,54 @@ variable "authentication_types" {
     error_message = "The `authentication_types` variable only supports the following types: `API_KEY`, `AWS_IAM`, `AMAZON_COGNITO_USER_POOLS`, and `OPENID_CONNECT`."
   }
 }
+
 variable "schema" {
   description = "The schema definition, in GraphQL schema language format."
   type        = string
 }
+
 variable "tags" {
   description = "A mapping of tags to assign to the AppSync resource."
   type        = map(string)
   default     = null
 }
+
 variable "openid_connect_config" {
   description = "The OpenID configuration block."
   type        = map(string)
   default     = null
 }
+
 variable "user_pool_config" {
   description = "The Cognito User Pool configuration block."
   type        = map(string)
   default     = null
 }
+
 variable "logging_enabled" {
   description = "Whether logging should be enabled."
   type        = bool
   default     = true
 }
+
 variable "logging_level" {
   description = "The logging level. Valid values: `ALL`, `ERROR`, or `NONE`."
   type        = string
   default     = "ALL"
 }
+
 variable "log_retention_days" {
   description = "How many days to keep the AppSync logs in CloudWatch for."
   type        = number
   default     = 0
 }
+
 variable "logging_exclude_verbose_content" {
-  description = "Set to TRUE to exclude sections that contain information such as headers, context, and evaluated mapping templates, regardless of logging level."
+  description = "Set to `true` to exclude sections that contain information such as headers, context, and evaluated mapping templates, regardless of logging level."
   type        = bool
   default     = false
 }
+
 variable "datasources" {
   description = "A list of AppSync datasource resources (`aws_appsync_datasource` resource objects). This list must contain all datasource resources that are used by any functions in the `functions` input variable or any unit resolvers in the `unit_resolvers` input variable."
   type = list(object({
@@ -67,6 +77,7 @@ variable "datasources" {
   }))
   default = []
 }
+
 variable "functions" {
   description = "A map of key-map pairs of AppSync functions. The keys are only used for unique identification (e.g. a combination of datasource name and function name). The values are maps themselves."
   type = map(object({
@@ -77,6 +88,7 @@ variable "functions" {
   }))
   default = {}
 }
+
 variable "unit_resolvers" {
   description = "A map of key-map pairs of AppSync unit resolvers. The keys are only used for unique identification (e.g. a combination of datasource name and resolver name). The values are maps themselves."
   type = map(object({
@@ -88,6 +100,7 @@ variable "unit_resolvers" {
   }))
   default = {}
 }
+
 variable "pipeline_resolvers" {
   description = "A map of key-map pairs of AppSync pipeline resolvers. The keys are only used for unique identification (e.g. a combination of datasource name and resolver name). The values are maps themselves. The 'functions' field within the value map is a list of function keys, corresponding with the map keys provided for the 'functions' variable."
   type = map(object({
@@ -99,7 +112,6 @@ variable "pipeline_resolvers" {
   }))
   default = {}
 }
-
 
 module "assert_cognito_config" {
   source        = "Invicton-Labs/assertion/null"
