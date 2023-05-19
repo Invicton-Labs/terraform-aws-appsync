@@ -1,47 +1,39 @@
-data "aws_caller_identity" "current" {}
-data "aws_region" "current" {}
+data "aws_iam_policy_document" "assume_logging_role" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      type        = "Service"
+      identifiers = ["appsync.amazonaws.com"]
+    }
+  }
+}
 
 // Create a role that allows the AppSync API to do logging
 resource "aws_iam_role" "appsync_logging" {
   name_prefix        = "AppSyncLogging-"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "appsync.amazonaws.com"
-      },
-      "Effect": "Allow"
-    }
-  ]
+  assume_role_policy = data.aws_iam_policy_document.assume_logging_role.json
 }
-EOF
+
+data "aws_iam_policy_document" "cloudwatch_logging" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = [
+      "*"
+    ]
+  }
 }
 
 // Create a policy for linking to the AppSync logging role
 resource "aws_iam_role_policy" "appsync_logging" {
   name_prefix = "AppSyncLogging-"
   role        = aws_iam_role.appsync_logging.id
-  policy      = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-            ],
-            "Resource": [
-                "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:/aws/appsync/apis/*"
-            ]
-        }
-    ]
-}
-EOF
+  policy      = data.aws_iam_policy_document.cloudwatch_logging.json
 }
 
 // Create the GraphQL API
