@@ -38,11 +38,24 @@ resource "aws_iam_role_policy" "appsync_logging" {
 
 // Create the GraphQL API
 resource "aws_appsync_graphql_api" "this" {
-  authentication_type = var.authentication_types[0]
-  name                = var.name
-  schema              = var.schema
-  xray_enabled        = var.xray_enabled
-  tags                = var.tags
+  authentication_type  = var.authentication_types[0]
+  name                 = var.name
+  schema               = var.schema
+  xray_enabled         = var.xray_enabled
+  tags                 = var.tags
+  query_depth_limit    = var.query_depth_limit
+  resolver_count_limit = var.resolver_count_limit
+  visibility           = var.is_public ? "GLOBAL" : "PRIVATE"
+  introspection_config = var.introspection_enabled ? "ENABLED" : "DISABLED"
+
+  dynamic "enhanced_metrics_config" {
+    for_each = var.enhanced_metrics_config.data_source_level_metrics_behaviour != null || var.enhanced_metrics_config.operation_level_metrics_config != null || var.enhanced_metrics_config.resolver_level_metrics_behavior != null ? [null] : []
+    content {
+      data_source_level_metrics_behavior = var.enhanced_metrics_config.data_source_level_metrics_behaviour
+      operation_level_metrics_config     = var.enhanced_metrics_config.operation_level_metrics_config
+      resolver_level_metrics_behavior    = var.enhanced_metrics_config.resolver_level_metrics_behavior
+    }
+  }
 
   dynamic "log_config" {
     for_each = var.logging_enabled ? [1] : []
@@ -136,12 +149,6 @@ resource "aws_appsync_domain_name_api_association" "this" {
   count       = var.create_custom_domain == true ? 1 : 0
   api_id      = aws_appsync_graphql_api.this.id
   domain_name = aws_appsync_domain_name.this[0].domain_name
-}
-
-// Get the log group that was automatically created by the GraphQL API
-resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/appsync/apis/${aws_appsync_graphql_api.this.id}"
-  retention_in_days = var.log_retention_days
 }
 
 module "appsync_resolvers" {

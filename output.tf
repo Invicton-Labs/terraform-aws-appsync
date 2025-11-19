@@ -117,10 +117,6 @@ output "pipeline_resolver_resources" {
   description = "A map of AppSync pipeline resolver resources that were created. The map keys correspond to the map keys in the `pipeline_resolvers` input variable."
   value       = module.appsync_resolvers.pipeline_resolvers
 }
-output "log_group" {
-  description = "The CloudWatch log group resource that was created for the AppSync API."
-  value       = aws_cloudwatch_log_group.this
-}
 output "custom_domain_hosted_zone" {
   description = "The ID of the hosted zone of the custom domain (used for a Route53 alias record)."
   value       = var.create_custom_domain ? aws_appsync_domain_name.this[0].hosted_zone_id : null
@@ -128,4 +124,8 @@ output "custom_domain_hosted_zone" {
 output "custom_domain_appsync_domain_name" {
   description = "The AppSync domain name for the custom domain (used for a Route53 alias record)."
   value       = var.create_custom_domain ? aws_appsync_domain_name.this[0].appsync_domain_name : null
+}
+output "cloudwatch_log_group_name" {
+  description = "The name of the CloudWatch log group that the AppSync GraphQL API will use. Use it to create the log group before "
+  value       = "/aws/appsync/apis/${aws_appsync_graphql_api.this.id}"
 }

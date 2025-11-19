@@ -64,7 +64,7 @@ locals {
 
 module "assertion" {
   source        = "Invicton-Labs/assertion/null"
-  version       = "~> 0.2.1"
+  version       = "~> 0.2.8"
   depends_on    = [var.datasources]
   for_each      = toset(local.datasource_names)
   error_message = "Datasource `${each.value}` is referred to in a function or unit resolver, but was not provided in the `datasources` variable ([${join(", ", local.provided_datasource_names)}])."

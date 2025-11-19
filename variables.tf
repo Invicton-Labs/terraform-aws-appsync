@@ -78,6 +78,49 @@ variable "xray_enabled" {
   nullable    = false
 }
 
+variable "query_depth_limit" {
+  description = "The maximum depth a query can have in a single request. Depth refers to the amount of nested levels allowed in the body of query. The default value is 0 (or unspecified), which indicates there's no depth limit. If you set a limit, it can be between 1 and 75 nested levels. This field will produce a limit error if the operation falls out of bounds."
+  type        = number
+  default     = null
+  nullable    = true
+}
+
+variable "resolver_count_limit" {
+  description = "The maximum number of resolvers that can be invoked in a single request. The default value is 0 (or unspecified), which will set the limit to 10000. When specified, the limit value can be between 1 and 10000. This field will produce a limit error if the operation falls out of bounds."
+  type        = number
+  default     = null
+  nullable    = true
+}
+
+variable "is_public" {
+  description = "Whether the API should be made public. If false, it will be a private API only available within the VPC."
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
+variable "introspection_enabled" {
+  description = "Whether the API should allow introspection."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
+variable "enhanced_metrics_config" {
+  description = "Configuration values for enhanced metrics."
+  type = object({
+    data_source_level_metrics_behaviour = optional(string)
+    operation_level_metrics_config      = optional(string)
+    resolver_level_metrics_behavior     = optional(string)
+  })
+  default = {
+    data_source_level_metrics_behaviour = null
+    operation_level_metrics_config      = null
+    resolver_level_metrics_behavior     = null
+  }
+  nullable = false
+}
+
 variable "logging_enabled" {
   description = "Whether logging should be enabled."
   type        = bool
@@ -183,35 +226,35 @@ variable "pipeline_resolvers" {
 
 module "assert_cognito_config" {
   source        = "Invicton-Labs/assertion/null"
-  version       = "~> 0.2.4"
+  version       = "~> 0.2.8"
   error_message = "If `AMAZON_COGNITO_USER_POOLS` is provided as an authentication type in the `authentication_types` variable, the `user_pool_config` variable must also be provided."
   condition     = !(contains(var.authentication_types, "AMAZON_COGNITO_USER_POOLS") && var.user_pool_config == null)
 }
 
 module "assert_openid_config" {
   source        = "Invicton-Labs/assertion/null"
-  version       = "~> 0.2.4"
+  version       = "~> 0.2.8"
   error_message = "If `OPENID_CONNECT` is provided as an authentication type in the `authentication_types` variable, the `openid_connect_config` variable must also be provided."
   condition     = !(contains(var.authentication_types, "OPENID_CONNECT") && var.openid_connect_config == null)
 }
 
 module "assert_lambda_config" {
   source        = "Invicton-Labs/assertion/null"
-  version       = "~> 0.2.4"
+  version       = "~> 0.2.8"
   error_message = "If `AWS_LAMBDA` is provided as an authentication type in the `authentication_types` variable, the `lambda_authorizer_config` variable must also be provided."
   condition     = !(contains(var.authentication_types, "AWS_LAMBDA") && var.lambda_authorizer_config == null)
 }
 
 module "assert_no_duplicate_authorizers" {
   source        = "Invicton-Labs/assertion/null"
-  version       = "~> 0.2.4"
+  version       = "~> 0.2.8"
   error_message = "The `authentication_types` variable may not include any duplicate values."
   condition     = length(distinct(var.authentication_types)) == length(var.authentication_types)
 }
 
 module "assert_valid_authorizers" {
   source        = "Invicton-Labs/assertion/null"
-  version       = "~> 0.2.4"
+  version       = "~> 0.2.8"
   error_message = "The `authentication_types` variable may only include \"API_KEY\", \"AWS_IAM\", \"AMAZON_COGNITO_USER_POOLS\", \"OPENID_CONNECT\", and \"AWS_LAMBDA\"."
   condition     = length(setsubtract(var.authentication_types, ["API_KEY", "AWS_IAM", "AMAZON_COGNITO_USER_POOLS", "OPENID_CONNECT", "AWS_LAMBDA"])) == 0
 }
